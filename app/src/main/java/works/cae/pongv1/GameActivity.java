@@ -11,6 +11,7 @@ import works.cae.simplegameenginev1.SGPreferences;
  */
 
 public class GameActivity extends SGActivity {
+    public GameView mView;
     public static final String TAG = "PongV1";
 
     @Override
@@ -19,6 +20,9 @@ public class GameActivity extends SGActivity {
 
         enableFullScreen();
         enableKeepScreenOn();
+
+        mView = new GameView(this);
+        setContentView(mView);
 
         SGPreferences preferences = new SGPreferences(this);
         if(preferences.getInt("first_time", -1) == -1) {
