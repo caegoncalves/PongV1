@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
+import android.graphics.RectF;
 
 import works.cae.simplegameenginev1.SGView;
 
@@ -20,12 +20,12 @@ public class GameView extends SGView {
     private final static int PADDLE_HEIGHT = 98;
     private final static int PADDLE_WIDTH = 23;
 
-    private final static int BALL_SPEED = 2; // Velocidade da bola
-    private final static int OPPONENT_SPEED = 2; // Velocidade do paddle oponente
+    private final static int BALL_SPEED = 120; // Velocidade da bola 120px por segundo
+    private final static int OPPONENT_SPEED = 120; // Velocidade do paddle oponente 120px por segundo
 
-    private Rect mBallDestination = new Rect();
-    private Rect mOpponentDestination = new Rect();
-    private Rect mPlayerDestination = new Rect();
+    private RectF mBallDestination = new RectF();
+    private RectF mOpponentDestination = new RectF();
+    private RectF mPlayerDestination = new RectF();
 
     private Paint mTempPaint = new Paint();
 
@@ -57,9 +57,9 @@ public class GameView extends SGView {
     }
 
     @Override
-    public void step(Canvas canvas) { // Sobrepondo elementos do jogo à tela
-        moveBall();
-        moveOpponent();
+    public void step(Canvas canvas, float eleapsedTimeInSeconds) { // Sobrepondo elementos do jogo à tela
+        moveBall(eleapsedTimeInSeconds);
+        moveOpponent(eleapsedTimeInSeconds);
 
         mTempPaint.setColor(Color.RED);
 
@@ -68,12 +68,12 @@ public class GameView extends SGView {
         canvas.drawRect(mOpponentDestination, mTempPaint);
     }
 
-    private void moveOpponent() {
+    private void moveOpponent(float eleapsedTimeInSeconds) {
         Point viewDimensions = getDimensions();
 
         if(mOpponentMoveDown) { // Testa se a direção do oponente é para BAIXO
-            mOpponentDestination.top += OPPONENT_SPEED; // Desenha o topo do paddle oponente 2px para BAIXO
-            mOpponentDestination.bottom += OPPONENT_SPEED; // Desenha a base do paddle oponente 2px para BAIXO
+            mOpponentDestination.top += OPPONENT_SPEED * eleapsedTimeInSeconds; // Desenha o topo do paddle oponente 2px para BAIXO
+            mOpponentDestination.bottom += OPPONENT_SPEED * eleapsedTimeInSeconds; // Desenha a base do paddle oponente 2px para BAIXO
 
             if(mOpponentDestination.bottom >= viewDimensions.y) { // Testa se a base ultrapassou o canto INFERIOR da tela (efeito de encostar/rebater)
                 mOpponentDestination.top = viewDimensions.y - PADDLE_HEIGHT; // Recua o topo em 2px para BAIXO usando a medida do paddle
@@ -82,8 +82,8 @@ public class GameView extends SGView {
                 mOpponentMoveDown = false; // Muda para false porque o movimento da bola agora será para CIMA
             }
         } else {
-            mOpponentDestination.top -= OPPONENT_SPEED; // Desenha o topo do paddle oponente 2px para CIMA
-            mOpponentDestination.bottom -= OPPONENT_SPEED;// Desenha a base do paddle oponente 2px para CIMA
+            mOpponentDestination.top -= OPPONENT_SPEED * eleapsedTimeInSeconds; // Desenha o topo do paddle oponente 2px para CIMA
+            mOpponentDestination.bottom -= OPPONENT_SPEED * eleapsedTimeInSeconds;// Desenha a base do paddle oponente 2px para CIMA
 
             if(mOpponentDestination.top < 0) {
                 mOpponentDestination.top = 0;
@@ -94,12 +94,12 @@ public class GameView extends SGView {
         }
     }
 
-    private void moveBall() {
+    private void moveBall(float eleapsedTimeInSeconds) {
         Point viewDimensions = getDimensions();
 
         if(mBallMoveRight) { // Testa se a direção é DIREITA
-            mBallDestination.left += BALL_SPEED; // Desenha a aresta ESQUERDA da bola 2 px para DIREITA
-            mBallDestination.right += BALL_SPEED; // Desenha a aresta DIREITA da bola 2 px para DIREITA
+            mBallDestination.left += BALL_SPEED * eleapsedTimeInSeconds; // Desenha a aresta ESQUERDA da bola 2 px para DIREITA
+            mBallDestination.right += BALL_SPEED * eleapsedTimeInSeconds; // Desenha a aresta DIREITA da bola 2 px para DIREITA
 
             if(mBallDestination.right >= viewDimensions.x) { // Testa se a aresta DIREITA ultrapassou o canto DIREITO da tela (efeito de encostar/rebater)
                 mBallDestination.left = viewDimensions.x - BALL_SIZE; // Recua a aresta ESQUERDA em 2px para a ESDQUERDA
@@ -108,8 +108,8 @@ public class GameView extends SGView {
                 mBallMoveRight = false; // Muda para false porque o movimento da bola agora é para a ESQUERDA
             }
         } else { // Lógica inversa para movimentar a bola para a ESQUERDA
-            mBallDestination.left -= BALL_SPEED;
-            mBallDestination.right -= BALL_SPEED;
+            mBallDestination.left -= BALL_SPEED * eleapsedTimeInSeconds;
+            mBallDestination.right -= BALL_SPEED * eleapsedTimeInSeconds;
 
             if(mBallDestination.left <= 0) {
                 mBallDestination.left = 0;
