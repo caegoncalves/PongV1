@@ -5,8 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
+import works.cae.simplegameenginev1.SGImage;
+import works.cae.simplegameenginev1.SGImageFactory;
 import works.cae.simplegameenginev1.SGView;
 
 /**
@@ -14,6 +17,12 @@ import works.cae.simplegameenginev1.SGView;
  */
 
 public class GameView extends SGView {
+
+    private SGImage mBallImage;
+    private SGImage mOpponentImage;
+    private SGImage mPlayerImaage;
+
+    private Rect mTempImageSource = new Rect(); // Área onde a imaagem será desenhada
 
     private final static int BALL_SIZE = 16; // Tamanho da bola
     private final static int DISTANCE_FROM_EDGE = 16;
@@ -36,6 +45,12 @@ public class GameView extends SGView {
     public void setup() {
         Point viewDimensions = getDimensions();
         Point viewCenter = new Point(viewDimensions.x / 2, viewDimensions.y / 2);
+
+        SGImageFactory imageFactory = getmImageFactory();
+
+        mBallImage = imageFactory.createImage(R.drawable.ball);
+        mOpponentImage = imageFactory.createImage("opponent.png");
+        mPlayerImaage = imageFactory.createImage("player.png");
 
         int halfBall = BALL_SIZE / 2;
         int halfPaddleHeight = PADDLE_HEIGHT / 2;
@@ -63,9 +78,29 @@ public class GameView extends SGView {
 
         mTempPaint.setColor(Color.RED);
 
-        canvas.drawRect(mPlayerDestination, mTempPaint);
-        canvas.drawRect(mBallDestination, mTempPaint);
-        canvas.drawRect(mOpponentDestination, mTempPaint);
+        mTempImageSource.set(0, 0, PADDLE_WIDTH, PADDLE_HEIGHT);
+
+        if(mPlayerImaage != null) {
+            canvas.drawBitmap(mPlayerImaage.getmBitmap(), mTempImageSource, mPlayerDestination, mTempPaint);
+        } else {
+            canvas.drawRect(mPlayerDestination, mTempPaint);
+        }
+
+        if(mOpponentImage != null) {
+            canvas.drawBitmap(mOpponentImage.getmBitmap(), mTempImageSource, mPlayerDestination, mTempPaint);
+        } else {
+            canvas.drawRect(mOpponentDestination, mTempPaint);
+        }
+
+        mTempImageSource.set(0, 0, BALL_SIZE, BALL_SIZE);
+
+        if(mBallImage != null) {
+            canvas.drawBitmap(mBallImage.getmBitmap(), mTempImageSource, mBallDestination, mTempPaint);
+        } else {
+            canvas.drawRect(mBallDestination, mTempPaint);
+        }
+
+
     }
 
     private void moveOpponent(float eleapsedTimeInSeconds) {
