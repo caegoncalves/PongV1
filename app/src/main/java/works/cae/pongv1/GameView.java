@@ -87,7 +87,7 @@ public class GameView extends SGView {
         }
 
         if(mOpponentImage != null) {
-            canvas.drawBitmap(mOpponentImage.getmBitmap(), mTempImageSource, mPlayerDestination, mTempPaint);
+            canvas.drawBitmap(mOpponentImage.getmBitmap(), mTempImageSource, mOpponentDestination, mTempPaint);
         } else {
             canvas.drawRect(mOpponentDestination, mTempPaint);
         }
